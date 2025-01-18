@@ -1,35 +1,6 @@
-use std::{sync::Arc, time::Duration};
+use std::sync::Arc;
 
-use tokio::time::sleep;
-
-struct User<'a> {
-    name: &'a str,
-}
-
-async fn coerce_to_user<'a>(name: &'a str) -> User<'a> {
-    User { name }
-}
-
-async fn create_users(names: Arc<Vec<&str>>) -> Vec<User> {
-    let mut users = Vec::new();
-    for name in names.iter() {
-        users.push(coerce_to_user(name).await);
-    }
-    users
-}
-
-async fn greet_users<'a>(users: Vec<User<'a>>) {
-    for user in users.iter() {
-        let _ = sleep(Duration::from_millis(100)).await;
-        println!("Hello, {}!", user.name);
-    }
-}
-
-async fn runner(names: Arc<Vec<&str>>) {
-    println!("Started Runner...");
-    let users = create_users(names).await;
-    greet_users(users).await;
-}
+use async_playground::lifetimes::runner;
 
 #[tokio::main]
 async fn main() {
