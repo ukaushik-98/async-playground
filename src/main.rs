@@ -1,29 +1,20 @@
-use std::sync::Arc;
+use async_playground::lifetimes::{arc_run, owned_runner};
+use clap::Parser;
 
-use async_playground::lifetimes::{runner, runner2};
-
-async fn arc_run() {
-    let name1 = "udit";
-    let name2 = "parit";
-    let names: Vec<&str> = vec![&name1, &name2];
-    let names = Arc::new(names);
-    let n_clone = names.clone();
-    let _ = tokio::spawn(runner(n_clone)).await;
-    println!("{:?}", names)
-}
-
-async fn arc_run_2() {
-    let name1 = "udit";
-    let name2 = "parit";
-    let _ = tokio::spawn(async move {
-        let names: Vec<&str> = vec![&name1, &name2];
-        runner2(&names).await;
-    })
-    .await;
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// Name of module to run
+    #[arg(short, long)]
+    module: String,
 }
 
 #[tokio::main]
 async fn main() {
-    // arc_run().await;
-    arc_run_2().await;
+    let args = Args::parse();
+    match args.module {
+        _ if args.module == "lf-arc" => arc_run().await,
+        _ if args.module == "lf-owned" => owned_runner().await,
+        _ => panic!("no matching module"),
+    }
 }
