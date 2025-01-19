@@ -1,7 +1,7 @@
 use std::time::Duration;
 use tokio::time::sleep;
 
-use super::arc_users::User;
+use super::User;
 
 pub async fn greet_users_runner<'a>(users: Vec<User<'a>>) {
     for user in users.iter() {
