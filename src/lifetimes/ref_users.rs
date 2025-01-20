@@ -11,3 +11,11 @@ pub async fn create_users_2<'a>(names: &Vec<&'a String>) -> Vec<User<'a>> {
     }
     users
 }
+
+pub async fn create_users_3<'a>(names: &Vec<&'a str>) -> Vec<User<'a>> {
+    let mut users: Vec<User<'a>> = Vec::new();
+    for name in names.iter() {
+        users.push(User { name });
+    }
+    users
+}

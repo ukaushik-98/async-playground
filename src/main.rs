@@ -1,4 +1,4 @@
-use async_playground::lifetimes::{arc_run, owned_runner};
+use async_playground::lifetimes::{arc_runner, owned_runner, ref_runner};
 use clap::Parser;
 
 #[derive(Parser, Debug)]
@@ -13,8 +13,9 @@ struct Args {
 async fn main() {
     let args = Args::parse();
     match args.module {
-        _ if args.module == "lf-arc" => arc_run().await,
+        _ if args.module == "lf-arc" => arc_runner().await,
         _ if args.module == "lf-owned" => owned_runner().await,
+        _ if args.module == "lf-ref" => ref_runner().await,
         _ => panic!("no matching module"),
     }
 }
