@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use runner::{runner, runner2, runner3};
+use tokio::task;
 
 pub mod arc_users;
 pub mod greet_users;
@@ -15,7 +16,7 @@ pub struct User<'a> {
 /// This means either the names must be:
 ///  - Live for static
 ///     - Either we have a &str which will have 'static.
-///     - Box::leak() which pushed the object into the heap and then "safely" leaks it.
+///     - Box::leak() which pushes the object into the heap and then "safely" leaks it.
 ///  - Owned Type, which is what move is for.
 ///  - Arc to push the object into a box and have a shared ref.
 pub async fn ref_runner() {
@@ -51,7 +52,26 @@ pub async fn owned_runner() {
     let name2 = "user2".to_owned();
     let _ = tokio::spawn(async move {
         let names: Vec<&String> = vec![&name1, &name2];
-        runner2(&names).await;
+        garbage(&names).await;
+        println!("names: {:?}", names);
     })
     .await;
+}
+
+async fn sum_random_large_comp() {
+    let t = task::spawn(async {
+        let x = vec!["hello"];
+        let y = &x;
+    })
+    .await;
+}
+
+async fn garbage<'a>(names: &'a Vec<&String>) {
+    let hello = String::from("hello");
+    let y: &String = &hello;
+    let x = vec![&y];
+    sum_random_large_comp().await;
+    // reference can be kept across await points with a 'a bound because the data is captured by the future
+    // however, once a spawn is required, that requires spawn to OWN the data.
+    println!("x: {:?}", x);
 }
