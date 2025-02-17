@@ -28,6 +28,8 @@ async fn foo2() {
     }
 }
 
+fn foo_send<T: Send>(x: T) {}
+
 async fn run() {
     // future cannot be sent between threads safely
     // within `impl Future<Output = ()>`, the trait `Send` is not implemented for `Rc<Vec<&str>>

@@ -19,3 +19,12 @@ pub async fn create_users_3<'a>(names: &Vec<&'a str>) -> Vec<User<'a>> {
     }
     users
 }
+
+pub async fn run() {
+    let _ = tokio::spawn(async move {
+        let h = String::from("hello");
+        let x = vec![&h];
+        create_users_2(&x).await;
+    })
+    .await;
+}
