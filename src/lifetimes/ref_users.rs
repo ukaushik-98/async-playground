@@ -1,3 +1,5 @@
+use std::future::Future;
+
 use super::User;
 
 async fn coerce_to_user<'a>(name: &'a String) -> User<'a> {
@@ -20,11 +22,13 @@ pub async fn create_users_3<'a>(names: &Vec<&'a str>) -> Vec<User<'a>> {
     users
 }
 
-pub async fn run() {
-    let _ = tokio::spawn(async move {
-        let h = String::from("hello");
-        let x = vec![&h];
-        create_users_2(&x).await;
-    })
-    .await;
-}
+// pub async fn run<'a>(h: &'a String) {
+//     let x = vec![h];
+//     let x = Box::pin(async move {
+//         create_users_2(&x).await;
+//     });
+//     tokio::spawn(x).await;
+//     // runc(x);
+// }
+
+pub async fn runc<T: Future<Output = ()>>(x: T) {}
