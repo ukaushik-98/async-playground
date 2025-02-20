@@ -1,5 +1,7 @@
 use std::future::Future;
 
+use tokio::task;
+
 use super::User;
 
 async fn coerce_to_user<'a>(name: &'a String) -> User<'a> {
@@ -32,3 +34,12 @@ pub async fn create_users_3<'a>(names: &Vec<&'a str>) -> Vec<User<'a>> {
 // }
 
 pub async fn runc<T: Future<Output = ()>>(x: T) {}
+
+pub async fn foo<'a, T: Send + std::fmt::Debug>(mut x: &'a mut T) {
+    // let _ = task::spawn(async move { println!("{:?}", x) }).await;
+}
+
+pub async fn foo2() {
+    let mut x = vec![0, 1, 2];
+    foo(&mut x).await;
+}
