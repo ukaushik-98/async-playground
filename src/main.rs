@@ -1,4 +1,7 @@
-use async_playground::lifetimes::{arc_runner, owned_runner, ref_runner};
+use async_playground::{
+    lifetimes::{arc_runner, owned_runner, ref_runner},
+    send_sync::implicit_type::foo,
+};
 use clap::Parser;
 
 #[derive(Parser, Debug)]

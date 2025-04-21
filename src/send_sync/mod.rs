@@ -1,5 +1,7 @@
 use std::{rc::Rc, time::Duration};
 
+pub mod implicit_type;
+
 use tokio::task;
 
 async fn foo() {
@@ -17,20 +19,27 @@ async fn foo() {
     .await;
 }
 
-async fn foo2() {
-    let x = vec!["hello", "world"];
-    // it's fine to have a !Send type within a closure as long as it's not pushed into a spawn
-    let mut rx = Rc::new(x);
-    tokio::time::sleep(Duration::from_secs(1)).await;
-    let rx = Rc::get_mut(&mut rx);
-    for v in rx.into_iter() {
-        println!("{:?}", v)
-    }
+fn create_vec<'a, T>() -> &'a T {
+    todo!()
 }
 
-fn foo_send<T: Send>(x: T) {}
+async fn foo2<'a, T>()
+where
+    T: 'a,
+{
+    let x = create_vec::<'a, T>();
+    // it's fine to have a !Send type within a closure as long as it's not pushed into a spawn
+    tokio::time::sleep(Duration::from_secs(1)).await;
+}
 
-async fn run() {
+fn foo_send<'a, T: Send + 'a>(x: T) {}
+
+async fn run<T>() {
+    // foo_send(foo2::<T>());
+    let _ = tokio::spawn(async move {
+        let x = foo2::<T>().await;
+    })
+    .await;
     // future cannot be sent between threads safely
     // within `impl Future<Output = ()>`, the trait `Send` is not implemented for `Rc<Vec<&str>>
     // tokio::spawn(foo2());
